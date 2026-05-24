@@ -1,27 +1,46 @@
-# import pygame
-# import sys
+import pygame
+import sys
+from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, TITLE
+from ui.menu import MainMenu
+from ui.screens import GameScreen
 
-# pygame.init()
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption(TITLE)
+    clock = pygame.time.Clock()
 
-# screen = pygame.display.set_mode((800, 600))
-# pygame.display.set_caption("Galaktički haos")
-# clock = pygame.time.Clock()
+    current_screen = "menu"
+    menu = MainMenu(screen)
+    game = GameScreen(screen)
 
-# font = pygame.font.SysFont(None, 64)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
 
-# running = True
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
+            if current_screen == "menu":
+                result = menu.handle_event(event)
+                if result == "game":
+                    current_screen = "game"
+            elif current_screen == "game":
+                game.handle_event(event)
 
-#     screen.fill((0, 0, 0))
-    
-#     tekst = font.render("Galaktički haos radi!", True, (255, 255, 0))
-#     screen.blit(tekst, (150, 270))
-    
-#     pygame.display.flip()
-#     clock.tick(60)
+        if current_screen == "menu":
+            menu.draw()
+        elif current_screen == "game":
+            game.update()
+            game.draw()
 
-# pygame.quit()
-# sys.exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    main()
